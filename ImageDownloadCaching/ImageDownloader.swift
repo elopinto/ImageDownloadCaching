@@ -7,11 +7,6 @@ import UIKit
 
 final class ImageDownloader {
     
-    enum CacheEntry {
-        case inProgress(Task<UIImage?, Never>)
-        case complete(UIImage)
-    }
-    
     private var cache: [URL: UIImage] = [:]
     
     func fetchImage(from url: URL, completion: @escaping (UIImage?) -> Void) {
