@@ -1,19 +1,42 @@
 //
 //  ViewController.swift
-//  ImageDownloadCaching
-//
-//  Created by Edward LoPinto on 5/7/24.
+//  CollectionViewImgs
 //
 
 import UIKit
 
-class ViewController: UIViewController {
+final class ViewController: UIViewController, UICollectionViewDelegate, UICollectionViewDataSource {
 
+    @IBOutlet private weak var collectionView: UICollectionView!
+    
+    private let items = ListItem.sampleListItems()
+    private let imageDownloader = ImageDownloader()
+    
     override func viewDidLoad() {
         super.viewDidLoad()
-        // Do any additional setup after loading the view.
     }
 
-
+    // MARK: UICollectionViewDataSource
+    
+    func collectionView(_ collectionView: UICollectionView, 
+                        numberOfItemsInSection section: Int) -> Int {
+        return items.count
+    }
+    
+    func collectionView(_ collectionView: UICollectionView, 
+                        cellForItemAt indexPath: IndexPath) -> UICollectionViewCell {
+        let listItem = items[indexPath.item]
+        let imageCell = collectionView.dequeueReusableCell(
+            withReuseIdentifier: "ImageCell",
+            for: indexPath
+        ) as! ImageCell
+        
+        Task {
+            let img = await imageDownloader.fetchImage(from: listItem.url)
+            imageCell.configure(text: listItem.title, image: img)
+        }
+        
+        return imageCell
+    }
 }
 

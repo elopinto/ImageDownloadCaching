@@ -1,8 +1,6 @@
 //
 //  SceneDelegate.swift
-//  ImageDownloadCaching
-//
-//  Created by Edward LoPinto on 5/7/24.
+//  CollectionViewImgs
 //
 
 import UIKit

@@ -2,8 +2,6 @@
 //  AppDelegate.swift
 //  ImageDownloadCaching
 //
-//  Created by Edward LoPinto on 5/7/24.
-//
 
 import UIKit
 
