@@ -15,6 +15,11 @@ final class ImageDownloader {
     private var cache: [URL: UIImage] = [:]
     
     func fetchImage(from url: URL, completion: @escaping (UIImage?) -> Void) {
+        // This is not ideal since fetchImage could be called from any thread,
+        // possibly attempting to access the cache while it's being written to on the
+        // main queue. Also, if this is called while the download of `url` is in progress,
+        // another download will be kicked off. The async/await version fixes these
+        // issues.
         if let cached = cache[url] {
             completion(cached)
             return
