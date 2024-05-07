@@ -31,8 +31,7 @@ final class ViewController: UIViewController, UICollectionViewDelegate, UICollec
             for: indexPath
         ) as! ImageCell
         
-        Task {
-            let img = await imageDownloader.fetchImage(from: listItem.url)
+        imageDownloader.fetchImage(from: listItem.url) { img in
             imageCell.configure(text: listItem.title, image: img)
         }
         

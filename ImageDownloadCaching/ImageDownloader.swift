@@ -5,7 +5,6 @@
 
 import UIKit
 
-@MainActor
 final class ImageDownloader {
     
     enum CacheEntry {
@@ -13,40 +12,41 @@ final class ImageDownloader {
         case complete(UIImage)
     }
     
-    private var cache: [URL: CacheEntry] = [:]
+    private var cache: [URL: UIImage] = [:]
     
-    func fetchImage(from url: URL) async -> UIImage? {
+    func fetchImage(from url: URL, completion: @escaping (UIImage?) -> Void) {
         if let cached = cache[url] {
-            switch cached {
-            case .complete(let image):
-                return image
-            case .inProgress(let task):
-                return await task.value
+            completion(cached)
+            return
+        }
+        
+        downloadImage(from: url) { image in
+            DispatchQueue.main.async {
+                self.cache[url] = image
+                completion(image)
             }
         }
-        
-        let task = Task {
-            await downloadImage(from: url)
-        }
-        
-        cache[url] = .inProgress(task)
-        let image = await task.value
-        
-        if let image {
-            cache[url] = .complete(image)
-        }
-        
-        return image
     }
     
-    private nonisolated func downloadImage(from url: URL) async -> UIImage? {
-        do {
-            let response = try await URLSession.shared.data(from: url)
-            return UIImage(data: response.0)
-        } catch {
-            print(error)
-            return nil
+    private nonisolated func downloadImage(from url: URL,
+                                           completion: @escaping (UIImage?) -> Void) {
+        URLSession.shared.dataTask(with: URLRequest(url: url)) { data, response, err in
+            if let err {
+                print(err)
+                completion(nil)
+                return
+            }
+            
+            guard let data else {
+                print("No data")
+                completion(nil)
+                return
+            }
+            
+            let img = UIImage(data: data)
+            completion(img)
         }
+        .resume()
     }
     
 }
