@@ -30,12 +30,15 @@ final class ViewController: UIViewController, UICollectionViewDelegate, UICollec
             withReuseIdentifier: "ImageCell",
             for: indexPath
         ) as! ImageCell
+        print("Dequed cell for: \(listItem.title)")
         
         Task {
             let img = await imageDownloader.fetchImage(from: listItem.url)
             imageCell.configure(text: listItem.title, image: img)
+            print("Configured cell for: \(listItem.title)")
         }
         
+        print("Returning cell for: \(listItem.title)")
         return imageCell
     }
 }
