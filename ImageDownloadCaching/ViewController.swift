@@ -30,13 +30,27 @@ final class ViewController: UIViewController, UICollectionViewDelegate, UICollec
             withReuseIdentifier: "ImageCell",
             for: indexPath
         ) as! ImageCell
+        let title = listItem.title
+        print("Cell dequeued for: \(title)")
         
-        Task {
-            let img = await imageDownloader.fetchImage(from: listItem.url)
-            imageCell.configure(text: listItem.title, image: img)
+//        if let cachedImage = imageDownloader.cachedImaged(from: listItem.url) {
+//            imageCell.configure(text: title, image: cachedImage)
+//            print("Cell synchronously configured for item: \(title)")
+//        } else {
+//            Task {
+//                let img = await imageDownloader.fetchImage(from: listItem.url)
+//                imageCell.configure(text: title, image: img)
+//                print("Cell configured for item: \(title)")
+//            }
+//        }
+        imageDownloader.fetchImage(from: listItem.url) { img in
+            imageCell.configure(text: title, image: img)
+            print("Cell configured for item: \(title)")
         }
         
+        print("Returning cell for: \(title)")
         return imageCell
     }
+    
 }
 

@@ -15,6 +15,24 @@ final class ImageDownloader {
     
     private var cache: [URL: CacheEntry] = [:]
     
+    func cachedImaged(from url: URL) -> UIImage? {
+        guard case let .complete(img) = cache[url] else {
+            return nil
+        }
+        return img
+    }
+    
+    func fetchImage(from url: URL, completion: @escaping @MainActor (UIImage?) -> Void) {
+        if let image = cachedImaged(from: url) {
+            completion(image)
+        } else {
+            Task {
+                let img = await fetchImage(from: url)
+                completion(img)
+            }
+        }
+    }
+    
     func fetchImage(from url: URL) async -> UIImage? {
         if let cached = cache[url] {
             switch cached {
