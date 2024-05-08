@@ -22,7 +22,7 @@ final class ImageDownloader {
         return img
     }
     
-    func fetchImage(from url: URL, completion: @escaping @MainActor (UIImage?) -> Void) {
+    func fetchImage(from url: URL, completion: @escaping (UIImage?) -> Void) {
         if let image = cachedImaged(from: url) {
             completion(image)
         } else {
